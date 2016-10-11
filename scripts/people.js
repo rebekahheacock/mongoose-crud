@@ -13,6 +13,7 @@ const done = function() {
   db.close();
 };
 
+// returns a promise and loads all the people
 const loadPeople = () =>
   new Promise((resolve, reject) => {
     const people = [];
@@ -40,7 +41,7 @@ db.once('open', function () {
     // Below is the way to insert that bypasses mongoose validations
     // .then((people) => {
     //   Person.collection.insert(people);
-    // }
+    // })
 
     // This inserts and runs the documents through mongoose validations
     .then(Person.insertMany)
