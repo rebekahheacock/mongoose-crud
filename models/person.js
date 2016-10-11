@@ -34,6 +34,25 @@ const personSchema = new mongoose.Schema({
     type: Number,
     required: true
   }
+},
+{
+  timestamps: true,
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true }
+});
+
+personSchema.virtual('age').get(function() {
+  let today = new Date();
+  let thisYear = today.getFullYear();
+  if (!this.dob) {
+    return 0;
+  }
+  if (this.dob.getMonth() > today.getMonth() ||
+    this.dob.getMonth() === today.getMonth() &&
+    this.dob.getDate() >= today.getDate()) {
+    thisYear -= 1;
+  }
+  return thisYear - this.dob.getFullYear();
 });
 
 const Person = mongoose.model('Person', personSchema);
