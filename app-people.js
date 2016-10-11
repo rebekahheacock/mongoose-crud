@@ -13,23 +13,53 @@ const done = function() {
 };
 
 const create = function(givenName, surname, dob, gender, height, weight) {
-  /* Add Code Here */
+  Person.create({
+    'name.given': givenName,
+    'name.surname': surname,
+    dob: dob,
+    gender: gender,
+    height: height,
+    weight: weight
+  })
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const index = function() {
-  /* Add Code Here */
+  Person.find()
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const show = function(id) {
-  /* Add Code Here */
+  Person.findById(id)
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const update = function(id, field, value) {
-  /* Add Code Here */
+  Person.findById(id)
+  .then((person) => {
+    // can pass 'given' and it will find correct field
+    // even though given is nested within name: name.given
+    person[field] = value;
+    return person.save();
+  })
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const destroy = function(id) {
-  /* Add Code Here */
+  Person.findById(id)
+  .then((person) => {
+    return person.remove();
+  })
+  .catch(console.error)
+  .then(done);
 };
 
 db.once('open', function() {
@@ -47,6 +77,7 @@ db.once('open', function() {
       let gender =  process.argv[6];
       let height = process.argv[7];
       let weight = process.argv[8];
+      // this will start with "true", eval to true, and then always execute
       if (true || givenName) {
         create(givenName, surname, dob, gender, height, weight);
       } else {
