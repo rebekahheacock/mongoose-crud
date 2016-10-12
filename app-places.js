@@ -6,29 +6,72 @@ mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://localhost/mongoose-crud');
 const db = mongoose.connection;
 
+const Place = require('./models/place.js');
+
 const done = function() {
   db.close();
 };
 
 // CRUD Actions
 const create = function(name, latitude, longitude, country) {
-  /* Add Code Here */
+  Place.create({
+    name: name,
+    loc: [latitude, longitude],
+    country: country
+  })
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
-const index = function(field, criterion) {
-  /* Add Code Here */
+const index = function() {
+  let search = {};
+  if (arguments[0] && arguments[1]) {
+    let field = arguments[0];
+    let criterion = arguments[1];
+    search[field] = criterion;
+  }
+  Place.find(search)
+  .then((places) => {
+    places.forEach((place) => {
+      console.log(place);
+    });
+  })
+  .catch(console.error)
+  .then(done);
 };
 
-const show = function() {
-  /* Add Code Here */
+const show = function(id) {
+  Place.findById(id)
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const update = function(id, field, value) {
-  /* Add Code Here */
+  Place.findById(id)
+  .then((place) => {
+    if (field === 'latitude') {
+      place.loc[0] = value;
+    } else if (field === 'longitude') {
+      place.loc[1] = value;
+    } else {
+      place[field] = value;
+    }
+    return place.save();
+  })
+  .then(console.log)
+  .catch(console.error)
+  .then(done);
 };
 
 const destroy = function(id) {
-  /* Add Code Here */
+  Place.findById(id)
+  .then((place) => {
+    return place.remove();
+  })
+  .catch(console.error)
+  .then(done);
 };
 
 // UI
@@ -68,6 +111,17 @@ db.once('open', function() {
     case 'destroy':
       id = process.argv[3];
       destroy(id);
+      break;
+
+    case 'search':
+      field = process.argv[3];
+      let criterion = process.argv[4];
+      if(!criterion) {
+        console.log('usage: search <field> <criterion>');
+        done();
+      } else {
+        index(field, criterion);
+      }
       break;
 
     default:

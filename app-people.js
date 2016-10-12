@@ -28,7 +28,11 @@ const create = function(givenName, surname, dob, gender, height, weight) {
 
 const index = function() {
   Person.find()
-  .then(console.log)
+  .then((people) => {
+    people.forEach((person) => {
+      console.log(person);
+    });
+  })
   .catch(console.error)
   .then(done);
 };
